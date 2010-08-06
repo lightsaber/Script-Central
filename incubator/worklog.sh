@@ -17,9 +17,8 @@ function debug
 while [ 1 = 1 ]; do
     last_stat=$stat
 
-    #if gnome-screensaver is active, log idle
-    #TODO if the app was configurable, you could set up all types of regex matches to not log on
-    if [ 0 -lt $(ps aux | grep '\[gnome-screensav\]' | wc -l) ]; then
+    xidle=$(dbus-send --session --dest=org.gnome.ScreenSaver --type=method_call --print-reply --reply-timeout=2000 /org/gnome/ScreenSaver org.gnome.ScreenSaver.GetActive | sed -nr 's/^.*boolean (.*)$/\1/p')
+    if [ "true" = "$xidle" ]; then
         stat=0
     else 
         stat=$(xprop -root | sed -nr 's/^_NET_ACTIVE_WINDOW.*\# (.*)/\1/p')
@@ -28,7 +27,6 @@ while [ 1 = 1 ]; do
     debug "stat is $stat"
 
     if [ "${stat}" = "${last_stat}" ]; then
-        #if the same program is running, do nothing
         sleep $POLL_FREQUENCY
         continue;
     fi
