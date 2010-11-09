@@ -1,5 +1,5 @@
 #!/bin/sh
-
+# test
 DATA=~/Documents/brainlog.txt
 
 while getopts el opt
